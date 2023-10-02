@@ -1,6 +1,0 @@
-class ApiFeatures {
-  constructor() {}
-
-    
-
-}
