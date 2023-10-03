@@ -1,5 +1,7 @@
-interface Config {
-  env: string;
+export interface Config {
+  app: {
+    env: string;
+  };
   server: {
     port: number;
   };
@@ -23,6 +25,8 @@ interface Config {
     secret: string;
     webhook: string;
   };
+  paypal: {
+    secret: string;
+    webhook: string;
+  };
 }
-
-export default Config;

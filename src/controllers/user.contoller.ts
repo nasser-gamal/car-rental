@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import userService from '../services/user.service';
 import { StatusCodes } from 'http-status-codes';
+import sendResponse from '../utils/sendResponse';
 
 export class UserController {
   /**
@@ -12,8 +13,8 @@ export class UserController {
    */
   static async createUser(req: Request, res: Response) {
     const user = await userService.create(req.body);
-    return res.status(StatusCodes.CREATED).json({
-      status: 'success',
+    return sendResponse(res, {
+      statusCode: StatusCodes.CREATED,
       message: 'user created successfully',
       data: user,
     });
@@ -30,9 +31,12 @@ export class UserController {
   static async getAllUsers(req: Request, res: Response) {
     console.log(req.query);
     const { count, users } = await userService.find(req.query);
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
-      count,
+
+    return sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      meta: {
+        total: +count,
+      },
       data: users,
     });
   }
@@ -48,8 +52,9 @@ export class UserController {
   static async getUser(req: Request, res: Response) {
     const { userId } = req.params;
     const user = await userService.findById(+userId);
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
+
+    return sendResponse(res, {
+      statusCode: StatusCodes.OK,
       data: user,
     });
   }
@@ -64,8 +69,8 @@ export class UserController {
   static async updateUser(req: Request, res: Response) {
     const { userId } = req.params;
     const user = await userService.update(+userId, req.body);
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
+    return sendResponse(res, {
+      statusCode: StatusCodes.OK,
       data: user,
     });
   }
@@ -82,8 +87,8 @@ export class UserController {
   static async changeUserPassword(req: Request, res: Response) {
     const { userId } = req.params;
     await userService.changePassword(+userId, req.body.password);
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
+    return sendResponse(res, {
+      statusCode: StatusCodes.OK,
       message: 'password changed successfully',
     });
   }
@@ -99,8 +104,8 @@ export class UserController {
   static async deleteUser(req: Request, res: Response) {
     const { userId } = req.params;
     await userService.deleteById(+userId);
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
+    return sendResponse(res, {
+      statusCode: StatusCodes.OK,
       message: 'user deleted successfully',
     });
   }

@@ -14,5 +14,5 @@ export abstract class CustomEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 }

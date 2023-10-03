@@ -1,17 +1,17 @@
-import { User } from '../entities/index';
+import { Token, User } from '../entities/index';
 import { DataSource } from 'typeorm';
+import config from './config';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
-  host: 'localhost',
-  port: +process.env.DATABASE_PORT || 3306,
-  username: 'root',
-  password: '74neverforget',
-  database: 'rent',
+  host: config.db.host || 'localhost',
+  port: +config.db.port || 3306,
+  username: config.db.username,
+  password: config.db.password,
+  database: config.db.database,
   logging: true,
-  // synchronize: config.app.env === "development" ? true : false,
-  synchronize: true,
-  entities: [User],
+  synchronize: config.app.env === 'development' ? true : false,
+  entities: [User, Token],
 });
 
 /**

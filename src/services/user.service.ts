@@ -1,93 +1,111 @@
 import { CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
 import { AppDataSource } from '../config/database';
 import { User } from '../entities/index';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, Not } from 'typeorm';
 import { BadRequestError } from '../utils/apiError';
 
-const userRepository = AppDataSource.getRepository(User);
-
 export default class UserService {
-  // create new user
+  static userRepository = AppDataSource.getRepository(User);
   /**
-   *
-   * @param {CreateUserDto} : createUserDto
-   * @returns {{user: User}} result object
+   * Creates a new user with the provided data and returns the created user object.
+   * @param createUserDto The data for creating a new user.
+   * @throws {BadRequestError} if the email is already taken.
+   * @returns {Promise<User>} The created user object
    */
   static async create(createUserDto: CreateUserDto): Promise<User> {
+    const emailTaken = await this.isEmailTaken(createUserDto.email);
+    if (emailTaken) throw new BadRequestError('email already exist');
+
     const user = new User();
     Object.assign(user, createUserDto);
-    return await userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
-  // find all users
   /**
-   *
-   * @param {query}: IFilterInterface
-   * @returns {{users: User[]}} result object
+   * Checks if an email is already taken by querying the database using the `userRepository` and the provided email and optional id.
+   * @param email - The email to check if it is taken.
+   * @param id - The id of the user to exclude from the check. This is useful when updating a user's email.
+   * @returns {Promise<User | undefined>} The user object if the email is taken, otherwise undefined.
    */
-  static async find(filterQuery?: any) {
-    let queryString = { ...filterQuery };
-    const excludeFields = ['sort', 'limit', 'page', 'keyword'];
-    excludeFields.forEach((field) => delete queryString[field]);
+  static async isEmailTaken(
+    email: string,
+    id?: number
+  ): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({
+      where: { email, id: Not(id) },
+    });
+    return user;
+  }
 
-    const [count, users] = await userRepository.findAndCount({
+  /**
+   /**
+    * Find all users in the database
+    * @param filterQuery - The filterQuery to filter the data.
+    * @returns {Promise<{ count: number, users: User[] }>} The count of users in database & array of users in objects.
+    */
+  static async find(filterQuery?: any) {
+    const { sort, limit, page, keyword, ...queryString } = filterQuery || {};
+
+    const [count, users] = await this.userRepository.findAndCount({
       where: queryString as FindOptionsWhere<User>,
     });
+
     return { count, users };
   }
 
-  // find user by id
   /**
-   *
-   * @param {id}: number
-   * @returns {{user: User}} result object
+   * Find a user by their ID in the database.
+   * @param id - The ID of the user to find.
+   * @throws {BadRequestError} - with the message "user not found" if no user is found.
+   * @returns {Promise<User | undefined>} The user object with the specified ID, or `undefined` if no user is found.
    */
-  static async findById(id: number): Promise<User> {
-    const user = await userRepository.findOne({ where: { id } });
+  static async findById(id: number): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new BadRequestError('user not found');
     return user;
   }
 
-  // update user by id
   /**
-   *
-   * @param {id}: number
-   * @param {updateUserDto}: UpdateUserDto
-   * @returns {{user: User}} result object
+   * Updates a user's information in the database.
+   * @param id - The ID of the user to update.
+   * @param updateUserDto - The data to update the user with.
+   * @throws {BadRequestError} - If the user is not found.
+   * @returns {Promise<User>} The updated user object.
    */
   static async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new BadRequestError('user not found');
+
     Object.assign(user, updateUserDto);
-    await userRepository.save(user);
+    await this.userRepository.save(user);
     return user;
   }
 
-  // change user password
   /**
-   *
-   * @param {id}: number
-   * @param {password}: string
-   * @returns {{user: User}} result object
+   * Change a user's password in database
+   * @param id  - The ID of the user to update
+   * @param password the new password to update it
+   * @throws {BadRequestError} - if the user is not found
+   * @returns {Promise<User | undefined>} the updated user object or undefined
    */
   static async changePassword(id: number, password: string): Promise<User> {
-    const user = await userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new BadRequestError('user not found');
     user.password = password;
-    await userRepository.save(user);
+    await this.userRepository.save(user);
     return user;
   }
 
-  // delete user by id
   /**
+   * Deletes a user from the database based on their ID.
    *
-   * @param {id}: number
-   * @returns
+   * @param id - The ID of the user to be deleted.
+   * @throws {BadRequestError} - If the user is not found.
+   * @returns {Promise<void>} - Promise that resolves with nothing.
    */
-  static async deleteById(id: number) {
-    const user = await userRepository.findOne({ where: { id } });
-    if (!user) throw new BadRequestError('user not found');
-    await userRepository.remove(user);
+  static async deleteById(id: number): Promise<void> {
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) throw new BadRequestError('user not found');
     return;
   }
 }

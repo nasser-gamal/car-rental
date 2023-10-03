@@ -1,10 +1,10 @@
+import 'dotenv/config';
 import * as Joi from 'joi';
-import Config from '../interfaces/config.interface';
+import { Config } from '../interfaces/config.interface';
 import type { ObjectSchema } from 'joi';
 
-import 'dotenv/config';
+console.log(process.env.DATABASE);
 // dotenv.config({ path: path.join(process.cwd(), '.env') });
-
 
 export const envVarsSchema: ObjectSchema = Joi.object()
   .keys({
@@ -38,9 +38,11 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
-console.log(process.env.DB_USERNAME)
+console.log(process.env.DB_USERNAME);
 const config: Config = {
-  env: envVar.NODE_ENV,
+  app: {
+    env: envVar.NODE_ENV,
+  },
   server: {
     port: +envVar.PORT,
   },
@@ -61,6 +63,10 @@ const config: Config = {
     password: envVar.EMAIL_PASSWORD,
   },
   stripe: {
+    secret: envVar.STRIPE_SECRET,
+    webhook: envVar.STRIPE_WEBHOOK_SECRET,
+  },
+  paypal: {
     secret: envVar.STRIPE_SECRET,
     webhook: envVar.STRIPE_WEBHOOK_SECRET,
   },
