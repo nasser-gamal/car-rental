@@ -9,7 +9,7 @@ const sendErrorForDev = (
     status: number;
     statusText: string;
     message: string;
-    stack: string;
+    // stack: string;
   },
   res: Response
 ) => {
@@ -17,7 +17,7 @@ const sendErrorForDev = (
     status: err.status,
     statusText: err.statusText,
     message: err.message,
-    stack: err.stack,
+    // stack: err.stack,
   });
 };
 

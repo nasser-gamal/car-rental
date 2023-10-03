@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { CustomEntity } from './custom.entity';
 import { RoleEnum } from '../enums/role.enum';
 import * as bcrypt from 'bcrypt';
@@ -53,6 +53,17 @@ export default class User extends CustomEntity {
   async beforeInsert() {
     this.userName = `${this.firstName} ${this.lastName}`;
     this.hashPassword();
+  }
+
+  @BeforeUpdate()
+  async beforeUpdate() {
+    if (this.firstName || this.lastName) {
+      this.userName = `${this.firstName} ${this.lastName}`;
+    }
+    if (this.password) {
+      this.hashPassword();
+      this.passwordChangedAt = new Date();
+    }
   }
 
   public hashPassword() {
