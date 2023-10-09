@@ -14,6 +14,9 @@ export interface Config {
   };
   jwt: {
     secret: string;
+    expires_in: string;
+    refresh_secret: string;
+    refresh_expires_in: string;
   };
   emails: {
     host: string;

@@ -7,12 +7,3 @@ export interface CreateUserDto {
   role?: boolean;
 }
 export interface UpdateUserDto extends CreateUserDto {}
-
-
-
-// export interface UserFilterQuery {
-//   firstName?: string;
-//   lastName?: string;
-//   userName?: string;
-//   role?: boolean;
-// }

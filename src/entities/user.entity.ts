@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 console.log(RoleEnum.ADMIN);
 
 @Entity()
-export default class User extends CustomEntity {
+class User extends CustomEntity {
   @Column()
   firstName: string;
 
@@ -19,7 +19,7 @@ export default class User extends CustomEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column()
   password: string;
 
   @Column({ select: false, nullable: true })
@@ -74,3 +74,5 @@ export default class User extends CustomEntity {
     return bcrypt.compareSync(password, this.password);
   }
 }
+
+export default User;

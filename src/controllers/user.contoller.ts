@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
-import userService from '../services/user.service';
+import UserService from '../services/user.service';
 import { StatusCodes } from 'http-status-codes';
 import sendResponse from '../utils/sendResponse';
+
+const userService = new UserService();
 
 export class UserController {
   /**
@@ -11,7 +13,7 @@ export class UserController {
    * @param {Response} res - The response object used to send the HTTP response.
    * @returns {Promise<Response>} The HTTP response with a status of 201 (Created) and a JSON object containing a success message and the created user data.
    */
-  static async createUser(req: Request, res: Response) {
+  async createUser(req: Request, res: Response) {
     const user = await userService.create(req.body);
     return sendResponse(res, {
       statusCode: StatusCodes.CREATED,
@@ -28,7 +30,7 @@ export class UserController {
    * @returns A JSON response with a status of 200 (OK) and an array of users as the `data` property.
    *
    */
-  static async getAllUsers(req: Request, res: Response) {
+  async getAllUsers(req: Request, res: Response) {
     console.log(req.query);
     const { count, users } = await userService.find(req.query);
 
@@ -49,7 +51,7 @@ export class UserController {
    * @returns A JSON response with a status of 200 (OK) and an object of user as the `data` property.
    *
    */
-  static async getUser(req: Request, res: Response) {
+  async getUser(req: Request, res: Response) {
     const { userId } = req.params;
     const user = await userService.findById(+userId);
 
@@ -66,7 +68,7 @@ export class UserController {
    * @returns A JSON response with a status of 200 (OK) and an object of user as the `data` property.
    *
    */
-  static async updateUser(req: Request, res: Response) {
+  async updateUser(req: Request, res: Response) {
     const { userId } = req.params;
     const user = await userService.update(+userId, req.body);
     return sendResponse(res, {
@@ -84,7 +86,7 @@ export class UserController {
    *
    */
 
-  static async changeUserPassword(req: Request, res: Response) {
+  async changeUserPassword(req: Request, res: Response) {
     const { userId } = req.params;
     await userService.changePassword(+userId, req.body.password);
     return sendResponse(res, {
@@ -101,7 +103,7 @@ export class UserController {
    *
    */
 
-  static async deleteUser(req: Request, res: Response) {
+  async deleteUser(req: Request, res: Response) {
     const { userId } = req.params;
     await userService.deleteById(+userId);
     return sendResponse(res, {

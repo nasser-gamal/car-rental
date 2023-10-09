@@ -3,8 +3,6 @@ import * as Joi from 'joi';
 import { Config } from '../interfaces/config.interface';
 import type { ObjectSchema } from 'joi';
 
-console.log(process.env.DATABASE);
-// dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 export const envVarsSchema: ObjectSchema = Joi.object()
   .keys({
@@ -54,7 +52,10 @@ const config: Config = {
     password: envVar.DB_PASSWORD,
   },
   jwt: {
-    secret: envVar.JWT_ACCESS_TOKEN,
+    secret: envVar.JWT_SECRET_TOKEN,
+    expires_in: envVar.SECRET_EXPIRES_IN,
+    refresh_secret: envVar.JWT_REFRESH_TOKEN,
+    refresh_expires_in: envVar.REFRESH_TOKEN_EXPIRES_IN,
   },
   emails: {
     host: envVar.EMAIL_HOST,

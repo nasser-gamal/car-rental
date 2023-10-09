@@ -11,21 +11,23 @@ import {
 
 const router = Router();
 
+const userController = new UserController();
+
 router.patch(
   '/change-password/:userId',
   validate(changeUserPasswordValidator),
-  UserController.changeUserPassword
+  userController.changeUserPassword
 );
 
 router
   .route('/')
-  .get(UserController.getAllUsers)
-  .post(validate(createUserValidator), UserController.createUser);
+  .get(userController.getAllUsers)
+  .post(validate(createUserValidator), userController.createUser);
 
 router
   .route('/:userId')
-  .get(validate(getUserValidator), UserController.getUser)
-  .patch(validate(updateUserValidator), UserController.updateUser)
-  .delete(validate(deleteUserValidator), UserController.deleteUser);
+  .get(validate(getUserValidator), userController.getUser)
+  .patch(validate(updateUserValidator), userController.updateUser)
+  .delete(validate(deleteUserValidator), userController.deleteUser);
 
 export default router;

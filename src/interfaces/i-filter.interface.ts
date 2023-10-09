@@ -3,5 +3,11 @@ export interface IFilterInterface {
   fields: string;
   sort: string;
   keyword: string;
-  paginate: string;
+  paginate: IPaginate;
+}
+
+export interface IPaginate {
+  page: number;
+  limit: number;
+  total: number;
 }

@@ -1,6 +1,6 @@
-import { ApiError } from '../utils/apiError';
-import config from '../config/config.js';
 import { NextFunction, Request, Response } from 'express';
+import { ApiError } from '../utils/apiError';
+import config from '../config/config';
 import { QueryFailedError } from 'typeorm';
 import { StatusCodes } from 'http-status-codes';
 
@@ -42,7 +42,8 @@ const globalError = (
   next: NextFunction
 ) => {
   const errObj = {
-    message: 'something went wrong',
+    message:
+      config.app.env === 'development' ? err.message : 'something went wrong',
     status: StatusCodes.INTERNAL_SERVER_ERROR,
     statusText: 'Error',
     stack: err.stack,
@@ -65,15 +66,11 @@ const globalError = (
     }
   }
 
-  sendErrorForDev(errObj, res);
-
-  // err.statusCode = err.statusCode || 500;
-  // err.status = err.status || 'error';
-  // if (config.env === 'development') {
-  //   sendErrorForDev(err, res);
-  // } else {
-  //   sendErrorForProd(err, res);
-  // }
+  if (config.app.env === 'development') {
+    sendErrorForDev(errObj, res);
+  } else {
+    sendErrorForProd(errObj, res);
+  }
 };
 
 export default globalError;
