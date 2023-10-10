@@ -4,7 +4,8 @@ import moment from 'moment';
 
 export interface TokenData {
   refreshToken: string;
-  refreshTokenExpires: moment.Moment;
+  refreshTokenExpires: number;
+  // refreshTokenExpires: moment.Moment;
   type: TokenType;
   payload: Record<string, unknown>;
 }

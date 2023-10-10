@@ -23,14 +23,14 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: +config.jwt.refresh_expires_in,
+      maxAge: config.jwt.refresh_expires_in,
     });
 
     return sendResponse(res, {
       statusCode: StatusCodes.OK,
       message: 'login sucessed',
       data: {
-        accessToken: tokens.accessToken,
+        tokens,
         user,
       },
     });

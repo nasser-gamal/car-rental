@@ -53,9 +53,9 @@ const config: Config = {
   },
   jwt: {
     secret: envVar.JWT_SECRET_TOKEN,
-    expires_in: envVar.SECRET_EXPIRES_IN,
+    expires_in: +envVar.SECRET_EXPIRES_IN * 60 * 1000,
     refresh_secret: envVar.JWT_REFRESH_TOKEN,
-    refresh_expires_in: envVar.REFRESH_TOKEN_EXPIRES_IN,
+    refresh_expires_in: +envVar.REFRESH_TOKEN_EXPIRES_IN * 24 * 60 * 60 * 1000,
   },
   emails: {
     host: envVar.EMAIL_HOST,

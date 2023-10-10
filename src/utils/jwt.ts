@@ -5,7 +5,6 @@ import { TokenType } from '../enums/token-type.enum';
 import { TokenData } from '../interfaces/token.interface';
 import { AppDataSource } from '../config/database';
 import { Token } from '../entities';
-import { FindOptionsWhere } from 'typeorm';
 import { NotFoundError } from './apiError';
 
 export class Jwt {
@@ -13,17 +12,20 @@ export class Jwt {
 
   private createToken(
     userId: Record<string, unknown>,
-    expiresIn: moment.Moment,
+    // expiresIn: moment.Moment,
+    expiresIn: number,
     type: TokenType,
     secret: Secret
   ): string {
+    console.log('secret-----', secret);
     const payload = {
       sub: userId,
       iat: moment().unix(),
-      exp: expiresIn.unix(),
+      exp: expiresIn,
+      // exp: expiresIn.unix(),
       type,
     };
-    return sign(payload, secret);
+    return sign({ userId }, secret, { expiresIn });
   }
 
   private async saveToken({
@@ -46,16 +48,17 @@ export class Jwt {
   }
 
   public async generateAuthTokens(payload: Record<string, unknown>) {
-    const accessTokenExpires = moment().add(config.jwt.expires_in, 'minutes');
-    const refreshTokenExpires = moment().add(
-      config.jwt.refresh_expires_in,
-      'days'
-    );
+    // const accessTokenExpires = moment().add(config.jwt.expires_in, 'minutes');
+    // const refreshTokenExpires = moment().add(
+    //   config.jwt.refresh_expires_in,
+    //   'days'
+    // );
 
     // create access token
     const accessToken = this.createToken(
       payload,
-      accessTokenExpires,
+      // accessTokenExpires,
+      config.jwt.expires_in,
       TokenType.ACCESS,
       config.jwt.secret
     );
@@ -63,14 +66,16 @@ export class Jwt {
     // // create refresh token
     const refreshToken = this.createToken(
       payload,
-      refreshTokenExpires,
+      // refreshTokenExpires,
+      config.jwt.refresh_expires_in,
       TokenType.REFRESH,
       config.jwt.refresh_secret
     );
 
     await this.saveToken({
       refreshToken,
-      refreshTokenExpires,
+      // refreshTokenExpires,
+      refreshTokenExpires: config.jwt.refresh_expires_in,
       type: TokenType.REFRESH,
       payload,
     });

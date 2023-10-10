@@ -45,10 +45,10 @@ class UserService {
     * @returns {Promise<{ count: number, users: User[] }>} The count of users in database & array of users in objects.
     */
   async find(filterQuery?: any) {
-    const { sort, limit, page, keyword, ...queryString } = filterQuery || {};
+    // const { sort, limit, page, keyword, ...queryString } = filterQuery || {};
 
-    const [count, users] = await this.userRepository.findAndCount({
-      where: queryString as FindOptionsWhere<User>,
+    const [users, count] = await this.userRepository.findAndCount({
+      // where: queryString as FindOptionsWhere<User>,
     });
 
     return { count, users };

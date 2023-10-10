@@ -10,8 +10,8 @@ const sendResponse = <T>(res: Response, data: IApiResponse<T>): void => {
     data: data?.data || null,
   };
 
+
   res.status(ResponseData.statusCode).json(ResponseData);
 };
 
 export default sendResponse;
-       

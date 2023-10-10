@@ -31,9 +31,7 @@ export class UserController {
    *
    */
   async getAllUsers(req: Request, res: Response) {
-    console.log(req.query);
     const { count, users } = await userService.find(req.query);
-
     return sendResponse(res, {
       statusCode: StatusCodes.OK,
       meta: {

@@ -8,6 +8,7 @@ import {
   getUserValidator,
   updateUserValidator,
 } from '../validators/userValidator';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.patch(
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(authMiddleware, userController.getAllUsers)
   .post(validate(createUserValidator), userController.createUser);
 
 router
